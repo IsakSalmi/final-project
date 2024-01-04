@@ -13,8 +13,11 @@ from sklearn.model_selection import cross_val_score
 from sklearn.model_selection import StratifiedKFold
 
 
-
-df = pd.read_csv("dataset/marathon_results_2016.csv")
+li = []
+li.append(pd.read_csv("dataset/marathon_results_2016.csv"))
+li.append(pd.read_csv("dataset/marathon_results_2017.csv"))
+li.append(pd.read_csv("dataset/marathon_results_2015.csv"))
+df = pd.concat(li,axis=0,ignore_index=True)
 def time_to_min(string):
     if string != '-':
         time_segments = string.split(':')
@@ -139,7 +142,7 @@ print('RMSE of Graident Bossting Regression...',sqrt(mean_squared_error(y_test, 
 
 sns.histplot(regression_error, bins=200, kde=False, label='Linear Regression')
 sns.histplot(xgb_regression_error, bins=200, kde=False, label='XGB Regression')
-plt.xlim(-30, 30)
+plt.xlim(-50, 50)
 plt.title('Distribution of Prediction Errors')
 plt.xlabel('Error in minutes')
 plt.ylabel('Frequency')
