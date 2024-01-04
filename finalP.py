@@ -91,15 +91,15 @@ y_train = prediction_df['Full_min']
 
 
 linear_model = LinearRegression()
-linear_cv_scores = cross_val_score(linear_model, X_train, y_train, cv=5, scoring='neg_mean_squared_error')
+linear_cv_scores = cross_val_score(linear_model, X_train, y_train, cv=10, scoring='neg_mean_squared_error')
 linear_rmse_cv = np.sqrt(-linear_cv_scores.mean())
 
 print('Linear Regression with Cross-Validation:')
 print('Average RMSE:', linear_rmse_cv)
 
 # XGBoost Regressor with Cross-Validation
-xgb_model = XGBRegressor(n_estimators=500, max_depth=3, learning_rate=0.005, reg_alpha=0.1, reg_lambda=0.1)
-xgb_cv_scores = cross_val_score(xgb_model, X_train, y_train, cv=5, scoring='neg_mean_squared_error')
+xgb_model = XGBRegressor(n_estimators=2000, max_depth=5, learning_rate=0.005, reg_alpha=0.1, reg_lambda=0.1)
+xgb_cv_scores = cross_val_score(xgb_model, X_train, y_train, cv=10, scoring='neg_mean_squared_error')
 xgb_rmse_cv = np.sqrt(-xgb_cv_scores.mean())
 
 print('\nXGBoost Regressor with Cross-Validation:')
@@ -140,8 +140,8 @@ print('Gradient Boosting Regression R Square...',XBG.score(X_test,y_test))
 print('RMSE of Graident Bossting Regression...',sqrt(mean_squared_error(y_test, xgb_regression_prediction)))
 
 
-sns.histplot(regression_error, bins=200, kde=False, label='Linear Regression')
-sns.histplot(xgb_regression_error, bins=200, kde=False, label='XGB Regression')
+sns.histplot(regression_error, bins=500, kde=False, label='Linear Regression')
+sns.histplot(xgb_regression_error, bins=500, kde=False, label='XGB Regression')
 plt.xlim(-50, 50)
 plt.title('Distribution of Prediction Errors')
 plt.xlabel('Error in minutes')
