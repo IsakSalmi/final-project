@@ -76,19 +76,19 @@ print(prediction_df)
 #----------------------------------------------------------------------------------------
 
 
-INDATA = ['Age','Half_min','5K_mins','10K_mins','15K_mins','20K_mins','M/F','stdev']
+INDATA = ['Age','5K_mins','M/F']
 
 
 #--------------------------------------------------------------------------------------
 
 
 
-X_train_scaled = prediction_df[INDATA]
+X_train = prediction_df[INDATA]
 y_train = prediction_df['Full_min']
 
 
 linear_model = LinearRegression()
-linear_cv_scores = cross_val_score(linear_model, X_train_scaled, y_train, cv=5, scoring='neg_mean_squared_error')
+linear_cv_scores = cross_val_score(linear_model, X_train, y_train, cv=5, scoring='neg_mean_squared_error')
 linear_rmse_cv = np.sqrt(-linear_cv_scores.mean())
 
 print('Linear Regression with Cross-Validation:')
@@ -96,7 +96,7 @@ print('Average RMSE:', linear_rmse_cv)
 
 # XGBoost Regressor with Cross-Validation
 xgb_model = XGBRegressor(n_estimators=500, max_depth=3, learning_rate=0.005, reg_alpha=0.1, reg_lambda=0.1)
-xgb_cv_scores = cross_val_score(xgb_model, X_train_scaled, y_train, cv=5, scoring='neg_mean_squared_error')
+xgb_cv_scores = cross_val_score(xgb_model, X_train, y_train, cv=5, scoring='neg_mean_squared_error')
 xgb_rmse_cv = np.sqrt(-xgb_cv_scores.mean())
 
 print('\nXGBoost Regressor with Cross-Validation:')
@@ -108,7 +108,7 @@ print('Average RMSE:', xgb_rmse_cv)
 
 
 
-traindf, testdf = train_test_split(prediction_df, test_size = 0.2,random_state=43)
+traindf, testdf = train_test_split(prediction_df, test_size = 0.2,random_state=60)
 
 X_train = traindf[INDATA]
 y_train = traindf['Full_min']
@@ -116,15 +116,9 @@ y_train = traindf['Full_min']
 X_test = testdf[INDATA]
 y_test = testdf['Full_min']
 
-scaler = StandardScaler()
-X_train_scaled = scaler.fit_transform(X_train)
-X_test_scaled = scaler.transform(X_test)
-
-
-
 
 XBG = XGBRegressor(n_estimators=2000, max_depth=5, learning_rate=0.005, reg_alpha=0.1, reg_lambda=0.1)
-XBG.fit(X_train_scaled, y_train)
+XBG.fit(X_train, y_train)
 
 LinReg = LinearRegression()
 LinReg.fit(X_train,y_train)
@@ -136,15 +130,15 @@ print('R sqruare of regression...',LinReg.score(X_test,y_test))
 print('RMSE of regression...',sqrt(mean_squared_error(y_test, regression_prediction)))
 
 
-xgb_regression_prediction = XBG.predict(X_test_scaled)
+xgb_regression_prediction = XBG.predict(X_test)
 xgb_regression_error = xgb_regression_prediction - y_test
 print('\nXGBRegressor------------------------------')
-print('Gradient Boosting Regression R Square...',XBG.score(X_test_scaled,y_test))
+print('Gradient Boosting Regression R Square...',XBG.score(X_test,y_test))
 print('RMSE of Graident Bossting Regression...',sqrt(mean_squared_error(y_test, xgb_regression_prediction)))
 
 
-sns.histplot(regression_error, bins=100, kde=False, label='Linear Regression')
-sns.histplot(xgb_regression_error, bins=100, kde=False, label='XGB Regression')
+sns.histplot(regression_error, bins=200, kde=False, label='Linear Regression')
+sns.histplot(xgb_regression_error, bins=200, kde=False, label='XGB Regression')
 plt.xlim(-30, 30)
 plt.title('Distribution of Prediction Errors')
 plt.xlabel('Error in minutes')
